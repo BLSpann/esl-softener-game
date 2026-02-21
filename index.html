@@ -89,31 +89,54 @@ function checkClassmateInput() {
 <div id="result"></div>
 
 <script>
-function checkInput() {
+function checkGroceryInput() {
   let input = document.getElementById("playerInput").value.toLowerCase();
   let score = 0;
 
-  if (input.includes("could") || input.includes("would")) {
-    score += 1;
-  }
-
-  if (input.includes("please")) {
-    score += 1;
-  }
-
-  if (input.includes("possibly") || input.includes("maybe") || input.includes("by any chance")) {
-    score += 1;
-  }
+  if(input.includes("could") || input.includes("would")) score++;
+  if(input.includes("please")) score++;
+  if(input.includes("possibly") || input.includes("maybe") || input.includes("by any chance")) score++;
 
   document.getElementById("meter").innerText = score;
 
-  if (score >= 2) {
-    document.getElementById("result").innerText =
-      "Success! The employee smiles and walks you to the baking soda.";
-  } else {
-    document.getElementById("result").innerText =
-      "The employee looks startled. Try softening your request.";
+  let resultText = (score >= 2)
+    ? "Success! The employee smiles and walks you to the baking soda."
+    : "The employee looks startled. Try softening your request.";
+
+  document.getElementById("groceryResult").innerText = resultText;
+
+  // If success, move to next scene
+  if(score >= 2){
+    document.getElementById("groceryScene").style.display = "none";
+    document.getElementById("classmateScene").style.display = "block";
+    document.getElementById("meter").innerText = 0; // reset for next scene
   }
+
+  document.getElementById("playerInput").value = "";
+}
+
+function checkClassmateInput() {
+  let input = document.getElementById("classmateInput").value.toLowerCase();
+  let score = 0;
+
+  if(input.includes("could") || input.includes("would")) score++;
+  if(input.includes("please")) score++;
+  if(input.includes("maybe") || input.includes("help") || input.includes("moment")) score++;
+
+  document.getElementById("meter").innerText = score;
+
+  let resultText = (score >= 2)
+    ? "Great! Your classmate explains the problem clearly."
+    : "Your classmate looks confused. Try softening your request.";
+
+  document.getElementById("classmateResult").innerText = resultText;
+
+  // Optional: move to next scene (office/professor interaction) on success
+  if(score >= 2){
+    alert("Next scene would start here: office/professor interaction.");
+  }
+
+  document.getElementById("classmateInput").value = "";
 }
 </script>
 
