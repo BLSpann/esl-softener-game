@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Softener Quest</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Softener Quest: Grocery Store Edition</h2>
+
+<p><strong>Softener Meter:</strong> <span id="meter">0</span></p>
+
+<p>You are at the grocery store and cannot find baking soda.  
+An employee is stocking shelves.</p>
+
+<p>Type what you would say to ask for help:</p>
+
+<textarea id="playerInput"></textarea>
+<br>
+<button onclick="checkInput()">Submit</button>
+
+<div id="result"></div>
+
+<script>
+function checkInput() {
+  let input = document.getElementById("playerInput").value.toLowerCase();
+  let score = 0;
+
+  if (input.includes("could") || input.includes("would")) {
+    score += 1;
+  }
+
+  if (input.includes("please")) {
+    score += 1;
+  }
+
+  if (input.includes("possibly") || input.includes("maybe") || input.includes("by any chance")) {
+    score += 1;
+  }
+
+  document.getElementById("meter").innerText = score;
+
+  if (score >= 2) {
+    document.getElementById("result").innerText =
+      "Success! The employee smiles and walks you to the baking soda.";
+  } else {
+    document.getElementById("result").innerText =
+      "The employee looks startled. Try softening your request.";
+  }
+}
+</script>
+
+</body>
+</html>
