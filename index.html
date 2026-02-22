@@ -8,20 +8,21 @@
     #scene { margin-bottom: 20px; }
     #feedback { margin-top: 10px; color: blue; }
     #result { margin-top: 10px; font-weight: bold; }
+    input { width: 80%; padding: 5px; }
+    button { padding: 5px 10px; }
   </style>
 </head>
 <body>
   <h1>Polite Requests Game</h1>
   <div id="scene">
     <p id="scene-text"></p>
-    <input type="text" id="student-input" placeholder="Type your response here..." style="width: 80%;">
+    <input type="text" id="student-input" placeholder="Type your response here...">
     <button id="submit-btn">Submit</button>
     <div id="feedback"></div>
     <div id="result"></div>
   </div>
 
   <script>
-    // --- Scenes setup ---
     const scenes = [
       {
         id: "grocery",
@@ -36,7 +37,7 @@
       {
         id: "professor",
         text: "Write an email to your professor requesting help. Include greeting, request, evidence you tried, thank you, and sign-off.",
-        softeners: [] // ignored
+        softeners: []
       }
     ];
 
@@ -48,91 +49,43 @@
     const resultEl = document.getElementById("result");
     const submitBtn = document.getElementById("submit-btn");
 
-    // --- Chaos Gremlin triggers ---
-    const chaosKeywords = [
-      "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
-      "STUPID","IDIOT","DUMB","SCREW YOU"
-    ];
+    const chaosKeywords = ["NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO","STUPID","IDIOT","DUMB","SCREW YOU"];
 
     function containsChaos(input){
-      const upperInput = input.toUpperCase();
-      // all caps
+      const upper = input.toUpperCase();
       if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
-      // excessive punctuation
       if(/([!?]{2,})/.test(input)) return true;
-      // rude keywords
-      for(const kw of chaosKeywords){
-        if(upperInput.includes(kw)) return true;
-      }
-      // gestures
+      for(const kw of chaosKeywords){ if(upper.includes(kw)) return true; }
       if(/\*.*\*|\[.*\]/.test(input)) return true;
       return false;
     }
 
     function checkPass(scene, input){
-      const lowerInput = input.toLowerCase();
+      const lower = input.toLowerCase();
       const feedbacks = [];
       let pass = true;
 
-      // Chaos gremlin first
       if(containsChaos(input)){
         return {pass:false, feedback:"Chaos gremlin! Try being polite and clear.", chaos:true};
       }
 
-      // --- Scene-specific checks ---
       if(scene.id === "grocery"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
-          pass = false;
-        }
-        if(!scene.softeners.some(s => lowerInput.includes(s))){
-          feedbacks.push("Add a polite attention-getting word like 'excuse me' or 'hi'.");
-          pass = false;
-        }
-        // Over-softening feedback
-        const softenerCount = scene.softeners.filter(s => lowerInput.includes(s)).length;
-        if(softenerCount > 1){
-          feedbacks.push("You used a lot of polite words — the employee looks a bit puzzled, but they help you anyway.");
-        }
-      } else if(scene.id === "peer"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
-          pass = false;
-        }
-        if(!scene.softeners.some(s => lowerInput.includes(s))){
-          feedbacks.push("Add a polite softener like 'please', 'maybe', or 'just'.");
-          pass = false;
-        }
-        if(!/i['’]?m trying to|i have|i need/i.test(input)){
-          feedbacks.push("Include a brief reason why, e.g., 'I'm trying to study'.");
-          pass = false;
-        }
-        // Over-softening feedback
-        const softenerCount = scene.softeners.filter(s => lowerInput.includes(s)).length;
-        if(softenerCount > 1){
-          feedbacks.push("You used a lot of polite words — your neighbor looks a bit puzzled, but they help you anyway.");
-        }
-      } else if(scene.id === "professor"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Make your request a question using 'Could you' or 'Would you'.");
-          pass = false;
-        }
-        if(!/hi|hello|greetings|dear/i.test(input)){
-          feedbacks.push("Include a polite greeting like 'Hi', 'Hello', or 'Dear'.");
-          pass = false;
-        }
-        if(!/tried|read|attempt|asked|looked at|looked for/i.test(lowerInput)){
-          feedbacks.push("Show that you tried first, e.g., 'I asked my friend', 'I looked at the syllabus', or 'I tried but still don't understand...'");
-          pass = false;
-        }
-        if(!/thank/i.test(input)){
-          feedbacks.push("Don't forget to thank your professor.");
-          pass = false;
-        }
-        if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){
-          feedbacks.push("Include a sign-off like your name, 'Best', or 'Sincerely'.");
-          pass = false;
-        }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Add a polite attention-getting word."); pass=false; }
+        const sc = scene.softeners.filter(s => lower.includes(s)).length;
+        if(sc>1){ feedbacks.push("You used many polite words — employee looks puzzled but helps anyway."); }
+      } else if(scene.id==="peer"){
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Add a polite softener."); pass=false; }
+        if(!/i['’]?m trying to|i have|i need/i.test(lower)){ feedbacks.push("Include a reason why."); pass=false; }
+        const sc = scene.softeners.filter(s => lower.includes(s)).length;
+        if(sc>1){ feedbacks.push("You used many polite words — neighbor looks puzzled but helps anyway."); }
+      } else if(scene.id==="professor"){
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Make a question using 'Could you' or 'Would you'."); pass=false; }
+        if(!/hi|hello|greetings|dear/i.test(input)){ feedbacks.push("Include a greeting like 'Hi' or 'Dear'."); pass=false; }
+        if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){ feedbacks.push("Show you tried first, e.g., 'I looked at the syllabus'."); pass=false; }
+        if(!/thank/i.test(input)){ feedbacks.push("Include a 'Thank you'."); pass=false; }
+        if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){ feedbacks.push("Include a sign-off or your name."); pass=false; }
       }
 
       return {pass, feedback:feedbacks.join(" "), chaos:false};
@@ -140,36 +93,28 @@
 
     function updateScene(){
       sceneTextEl.textContent = scenes[currentScene].text;
-      inputEl.value = "";
-      feedbackEl.textContent = "";
-      resultEl.textContent = "";
+      inputEl.value="";
+      feedbackEl.textContent="";
+      resultEl.textContent="";
     }
 
-    submitBtn.addEventListener("click", () => {
+    submitBtn.addEventListener("click", ()=>{
       const input = inputEl.value.trim();
       if(!input) return;
       const scene = scenes[currentScene];
-      const check = checkPass(scene, input);
+      const check = checkPass(scene,input);
 
-      if(check.chaos){
-        resultEl.textContent = check.feedback;
-        return;
-      }
-
+      if(check.chaos){ resultEl.textContent = check.feedback; return; }
       feedbackEl.textContent = check.feedback;
 
       if(check.pass){
-        resultEl.textContent = "Success! You passed this scene.";
+        resultEl.textContent="Success! You passed this scene.";
         currentScene++;
-        if(currentScene < scenes.length){
-          setTimeout(updateScene, 1500);
-        } else {
-          resultEl.textContent += " All scenes complete!";
-        }
+        if(currentScene<scenes.length){ setTimeout(updateScene,1500); }
+        else{ resultEl.textContent+=" All scenes complete!"; }
       }
     });
 
-    // Initialize first scene
     updateScene();
   </script>
 </body>
