@@ -1,177 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Polite Requests Game</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #scene { margin-bottom: 20px; }
-    #feedback { margin-top: 10px; color: blue; }
-    #result { margin-top: 10px; font-weight: bold; }
-  </style>
-</head>
-<body>
-  <h1>Polite Requests Game</h1>
-  <div id="scene">
-    <p id="scene-text"></p>
-    <input type="text" id="student-input" placeholder="Type your response here..." style="width: 80%;">
-    <button id="submit-btn">Submit</button>
-    <div id="feedback"></div>
-    <div id="result"></div>
-  </div>
-
-  <script>
-    // --- Scenes setup ---
-    const scenes = [
-      {
-        id: "grocery",
-        text: "You are at the grocery store and cannot find baking soda. An employee is stocking shelves.",
-        passConditions: { modal: true, softener: true },
-        softeners: ["excuse me","hi","sorry","pardon me"]
-      },
-      {
-        id: "peer",
-        text: "You are trying to study in your dorm, but neighbors are playing music loudly.",
-        passConditions: { modal: true, softener: true, explanation: true },
-        softeners: ["please","maybe","just","a little","if you don't mind"]
-      },
-      {
-        id: "professor",
-        text: "Write an email to your professor requesting help. Include greeting, request, evidence you tried, thank you, and sign-off.",
-        passConditions: { modal: true, effort: true, greeting: true, signoff: true, thankyou: true },
-        softeners: ["please","maybe","just","a little","if you don't mind"] // optional for professor
-      }
-    ];
-
-    let currentScene = 0;
-
-    const sceneTextEl = document.getElementById("scene-text");
-    const inputEl = document.getElementById("student-input");
-    const feedbackEl = document.getElementById("feedback");
-    const resultEl = document.getElementById("result");
-    const submitBtn = document.getElementById("submit-btn");
-
-    // --- Chaos Gremlin triggers ---
-    const chaosKeywords = [
-      "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
-      "STUPID","IDIOT","DUMB","SCREW YOU"
-    ];
-
-    function containsChaos(input){
-      const upperInput = input.toUpperCase();
-      // all caps
-      if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
-      // excessive punctuation
-      if(/([!?]{2,})/.test(input)) return true;
-      // rude keywords
-      for(const kw of chaosKeywords){
-        if(upperInput.includes(kw)) return true;
-      }
-      // gestures
-      if(/\*.*\*|\[.*\]/.test(input)) return true;
-      return false;
-    }
-
-    function checkPass(scene, input){
-      const lowerInput = input.toLowerCase();
-      const feedbacks = [];
-      let pass = true;
-
-      // Chaos gremlin first
-      if(containsChaos(input)){
-        return {pass:false, feedback:"Chaos gremlin! Try being polite and clear.", chaos:true};
-      }
-
-      // --- Scene-specific checks ---
-      if(scene.id === "grocery"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
-          pass = false;
-        }
-        if(!scene.softeners.some(s => lowerInput.includes(s))){
-          feedbacks.push("Add a polite attention-getting word like 'excuse me' or 'hi'.");
-          pass = false;
-        }
-      } else if(scene.id === "peer"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
-          pass = false;
-        }
-        if(!scene.softeners.some(s => lowerInput.includes(s))){
-          feedbacks.push("Add a polite softener like 'please', 'maybe', or 'just'.");
-          pass = false;
-        }
-        if(!/i['’]?m trying to|i have|i need/i.test(input)){
-          feedbacks.push("Include a brief reason why, e.g., 'I'm trying to study'.");
-          pass = false;
-        }
-      } else if(scene.id === "professor"){
-        if(!/could you|would you/.test(lowerInput)){
-          feedbacks.push("Make your request a question using 'Could you' or 'Would you'.");
-          pass = false;
-        }
-        if(!/hi|hello|greetings/i.test(input)){
-          feedbacks.push("Include a polite greeting like 'Hi' or 'Hello'.");
-          pass = false;
-        }
-        if(!/thank/i.test(input)){
-          feedbacks.push("Don't forget to thank your professor.");
-          pass = false;
-        }
-        if(!/sincerely|best|regards/i.test(input)){
-          feedbacks.push("Include a sign-off like 'Best' or 'Sincerely' with your name.");
-          pass = false;
-        }
-        if(!/tried|read|attempt/i.test(lowerInput)){
-          feedbacks.push("Show that you tried first, e.g., 'I read the syllabus but still don't understand...'");
-          pass = false;
-        }
-      }
-
-      // --- Over-softening check for grocery/peer ---
-      if((scene.id === "grocery" || scene.id === "peer") && scene.softeners){
-        const softenerCount = scene.softeners.filter(s => lowerInput.includes(s)).length;
-        if(softenerCount > 1){
-          feedbacks.push("You used a lot of polite words — your NPC looks a bit puzzled, but they help you anyway.");
-        }
-      }
-
-      return {pass, feedback:feedbacks.join(" "), chaos:false};
-    }
-
-    function updateScene(){
-      sceneTextEl.textContent = scenes[currentScene].text;
-      inputEl.value = "";
-      feedbackEl.textContent = "";
-      resultEl.textContent = "";
-    }
-
-    submitBtn.addEventListener("click", () => {
-      const input = inputEl.value.trim();
-      if(!input) return;
-      const scene = scenes[currentScene];
-      const check = checkPass(scene, input);
-
-      if(check.chaos){
-        resultEl.textContent = check.feedback;
-        return;
-      }
-
-      feedbackEl.textContent = check.feedback;
-
-      if(check.pass){
-        resultEl.textContent = "Success! You passed this scene.";
-        currentScene++;
-        if(currentScene < scenes.length){
-          setTimeout(updateScene, 1500);
-        } else {
-          resultEl.textContent += " All scenes complete!";
-        }
-      }
-    });
-
-    // Initialize first scene
-    updateScene();
-  </script>
-</body>
-</html>
+// Updated due diligence check for professor
+if(scene.id === "professor"){
+  if(!/could you|would you/.test(lowerInput)){
+    feedbacks.push("Make your request a question using 'Could you' or 'Would you'.");
+    pass = false;
+  }
+  if(!/hi|hello|greetings|dear/i.test(input)){
+    feedbacks.push("Include a polite greeting like 'Hi', 'Hello', or 'Dear'.");
+    pass = false;
+  }
+  // Updated due diligence keywords
+  if(!/tried|read|attempt|asked|looked at|looked for/i.test(lowerInput)){
+    feedbacks.push("Show that you tried first, e.g., 'I asked my friend', 'I looked at the syllabus', or 'I tried but still don't understand...'");
+    pass = false;
+  }
+  if(!/thank/i.test(input)){
+    feedbacks.push("Don't forget to thank your professor.");
+    pass = false;
+  }
+  if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){ 
+    // simple sign-off detection; allows just a name
+    feedbacks.push("Include a sign-off like your name, 'Best', or 'Sincerely'.");
+    pass = false;
+  }
+}
