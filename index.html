@@ -1,107 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Softener Quest: Grocery Store Edition</title>
-<style>
-  body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
-  textarea { width: 100%; height: 60px; }
-  button { margin-top: 0.5em; }
-  #meter { font-weight: bold; }
-</style>
+  <meta charset="UTF-8">
+  <title>Polite Requests Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #scene { margin-bottom: 20px; }
+    #feedback { margin-top: 10px; color: blue; }
+    #result { margin-top: 10px; font-weight: bold; }
+  </style>
 </head>
 <body>
-
-<h2>Softener Quest: Grocery Store Edition</h2>
-
-<p><strong>Softener Meter:</strong> <span id="meter">0</span></p>
-
-<div id="sceneContainer">
-
-  <div id="groceryScene">
-    <p>You are at the grocery store and cannot find baking soda. An employee is stocking shelves.</p>
-    <textarea id="playerInput" placeholder="Type your request here"></textarea>
-    <br>
-    <button onclick="checkGroceryInput()">Submit</button>
-    <div id="groceryResult"></div>
+  <h1>Polite Requests Game</h1>
+  <div id="scene">
+    <p id="scene-text"></p>
+    <input type="text" id="student-input" placeholder="Type your response here..." style="width: 80%;">
+    <button id="submit-btn">Submit</button>
+    <div id="feedback"></div>
+    <div id="result"></div>
   </div>
 
-  <div id="classmateScene" style="display:none;">
-    <p>You are in class and need help understanding a homework problem. A classmate is nearby.</p>
-    <textarea id="classmateInput" placeholder="Type your request here"></textarea>
-    <br>
-    <button onclick="checkClassmateInput()">Submit</button>
-    <div id="classmateResult"></div>
-  </div>
+  <script>
+    // --- Scenes setup ---
+    const scenes = [
+      {
+        id: "grocery",
+        text: "You are at the grocery store and cannot find baking soda. An employee is stocking shelves.",
+        passConditions: { modal: true, softener: true },
+        softeners: ["excuse me","hi","sorry","pardon me"]
+      },
+      {
+        id: "peer",
+        text: "You are trying to study in your dorm, but neighbors are playing music loudly.",
+        passConditions: { modal: true, softener: true, explanation: true },
+        softeners: ["please","maybe","just","a little","if you don't mind"]
+      },
+      {
+        id: "professor",
+        text: "Write an email to your professor requesting help. Include greeting, request, evidence you tried, thank you, and sign-off.",
+        passConditions: { modal: true, effort: true, greeting: true, signoff: true, thankyou: true },
+        softeners: ["please","maybe","just","a little","if you don't mind"] // optional for professor
+      }
+    ];
 
-  <div id="professorScene" style="display:none;">
-    <p>You need to email your professor for help. Make sure your email is polite and shows you tried first.</p>
-    <textarea id="professorInput" placeholder="Type your email here"></textarea>
-    <br>
-    <button onclick="checkProfessorInput()">Submit</button>
-    <div id="professorResult"></div>
-  </div>
+    let currentScene = 0;
 
-</div>
+    const sceneTextEl = document.getElementById("scene-text");
+    const inputEl = document.getElementById("student-input");
+    const feedbackEl = document.getElementById("feedback");
+    const resultEl = document.getElementById("result");
+    const submitBtn = document.getElementById("submit-btn");
 
-<script>
-function updateMeter(score) {
-  document.getElementById("meter").innerText = score;
-}
+    // --- Chaos Gremlin triggers ---
+    const chaosKeywords = [
+      "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
+      "STUPID","IDIOT","DUMB","SCREW YOU"
+    ];
 
-function checkGroceryInput() {
-  let input = document.getElementById("playerInput").value.toLowerCase();
-  let score = 0;
-  if(input.includes("could") || input.includes("would")) score++;
-  if(input.includes("please")) score++;
-  if(input.includes("maybe") || input.includes("possibly") || input.includes("by any chance")) score++;
-  updateMeter(score);
-  document.getElementById("groceryResult").innerText = (score>=2) ? 
-    "Success! The employee smiles and walks you to the baking soda." : 
-    "The employee looks startled. Try softening your request.";
-  if(score>=2){
-    document.getElementById("groceryScene").style.display="none";
-    document.getElementById("classmateScene").style.display="block";
-    updateMeter(0);
-  }
-  document.getElementById("playerInput").value="";
-}
+    function containsChaos(input){
+      const upperInput = input.toUpperCase();
+      // all caps
+      if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
+      // excessive punctuation
+      if(/([!?]{2,})/.test(input)) return true;
+      // rude keywords
+      for(const kw of chaosKeywords){
+        if(upperInput.includes(kw)) return true;
+      }
+      // gestures
+      if(/\*.*\*|\[.*\]/.test(input)) return true;
+      return false;
+    }
 
-function checkClassmateInput() {
-  let input = document.getElementById("classmateInput").value.toLowerCase();
-  let score = 0;
-  if(input.includes("could") || input.includes("would")) score++;
-  if(input.includes("please")) score++;
-  if(input.includes("maybe") || input.includes("help") || input.includes("moment")) score++;
-  updateMeter(score);
-  document.getElementById("classmateResult").innerText = (score>=2) ? 
-    "Great! Your classmate explains the problem clearly." : 
-    "Your classmate looks confused. Try softening your request.";
-  if(score>=2){
-    document.getElementById("classmateScene").style.display="none";
-    document.getElementById("professorScene").style.display="block";
-    updateMeter(0);
-  }
-  document.getElementById("classmateInput").value="";
-}
+    function checkPass(scene, input){
+      const lowerInput = input.toLowerCase();
+      const feedbacks = [];
+      let pass = true;
 
-function checkProfessorInput() {
-  let input = document.getElementById("professorInput").value.toLowerCase();
-  let score = 0;
-  if(input.includes("could") || input.includes("would")) score++;
-  if(input.includes("please")) score++;
-  if(input.includes("sorry") || input.includes("moment") || input.includes("if you have a chance")) score++;
-  if(input.includes("i read the syllabus") || input.includes("i tried") || input.includes("i looked")) score++;
-  updateMeter(score);
-  let resultText = "";
-  if(score>=3) resultText="Success! Your professor replies kindly and helps you.";
-  else if(score===2) resultText="Almost there! Consider showing you tried first and softening your request more.";
-  else resultText="Your email seems abrupt. Professors appreciate polite, soft requests.";
-  document.getElementById("professorResult").innerText = resultText;
-  if(score>=3) alert("Demo complete! You successfully navigated grocery, classmate, and professor scenes.");
-  document.getElementById("professorInput").value="";
-}
-</script>
+      // Chaos gremlin first
+      if(containsChaos(input)){
+        return {pass:false, feedback:"Chaos gremlin! Try being polite and clear.", chaos:true};
+      }
 
+      // --- Scene-specific checks ---
+      if(scene.id === "grocery"){
+        if(!/could you|would you/.test(lowerInput)){
+          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
+          pass = false;
+        }
+        if(!scene.softeners.some(s => lowerInput.includes(s))){
+          feedbacks.push("Add a polite attention-getting word like 'excuse me' or 'hi'.");
+          pass = false;
+        }
+      } else if(scene.id === "peer"){
+        if(!/could you|would you/.test(lowerInput)){
+          feedbacks.push("Use 'Could you' or 'Would you' in your request.");
+          pass = false;
+        }
+        if(!scene.softeners.some(s => lowerInput.includes(s))){
+          feedbacks.push("Add a polite softener like 'please', 'maybe', or 'just'.");
+          pass = false;
+        }
+        if(!/i['’]?m trying to|i have|i need/i.test(input)){
+          feedbacks.push("Include a brief reason why, e.g., 'I'm trying to study'.");
+          pass = false;
+        }
+      } else if(scene.id === "professor"){
+        if(!/could you|would you/.test(lowerInput)){
+          feedbacks.push("Make your request a question using 'Could you' or 'Would you'.");
+          pass = false;
+        }
+        if(!/hi|hello|greetings/i.test(input)){
+          feedbacks.push("Include a polite greeting like 'Hi' or 'Hello'.");
+          pass = false;
+        }
+        if(!/thank/i.test(input)){
+          feedbacks.push("Don't forget to thank your professor.");
+          pass = false;
+        }
+        if(!/sincerely|best|regards/i.test(input)){
+          feedbacks.push("Include a sign-off like 'Best' or 'Sincerely' with your name.");
+          pass = false;
+        }
+        if(!/tried|read|attempt/i.test(lowerInput)){
+          feedbacks.push("Show that you tried first, e.g., 'I read the syllabus but still don't understand...'");
+          pass = false;
+        }
+      }
+
+      return {pass, feedback:feedbacks.join(" "), chaos:false};
+    }
+
+    function updateScene(){
+      sceneTextEl.textContent = scenes[currentScene].text;
+      inputEl.value = "";
+      feedbackEl.textContent = "";
+      resultEl.textContent = "";
+    }
+
+    submitBtn.addEventListener("click", () => {
+      const input = inputEl.value.trim();
+      if(!input) return;
+      const scene = scenes[currentScene];
+      const check = checkPass(scene, input);
+
+      if(check.chaos){
+        resultEl.textContent = check.feedback;
+        return;
+      }
+
+      feedbackEl.textContent = check.feedback;
+
+      if(check.pass){
+        resultEl.textContent = "Success! You passed this scene.";
+        currentScene++;
+        if(currentScene < scenes.length){
+          setTimeout(updateScene, 1500);
+        } else {
+          resultEl.textContent += " All scenes complete!";
+        }
+      }
+    });
+
+    // Initialize first scene
+    updateScene();
+  </script>
 </body>
 </html>
