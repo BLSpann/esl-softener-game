@@ -128,6 +128,14 @@
         }
       }
 
+      // --- Over-softening check for grocery/peer ---
+      if((scene.id === "grocery" || scene.id === "peer") && scene.softeners){
+        const softenerCount = scene.softeners.filter(s => lowerInput.includes(s)).length;
+        if(softenerCount > 1){
+          feedbacks.push("You used a lot of polite words — your NPC looks a bit puzzled, but they help you anyway.");
+        }
+      }
+
       return {pass, feedback:feedbacks.join(" "), chaos:false};
     }
 
