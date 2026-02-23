@@ -45,6 +45,7 @@
       color: #b91c1c;
       display: block;
       animation: shake 0.5s ease-in-out 0s 2;
+      text-align: center;
     }
 
     @keyframes shake {
@@ -154,7 +155,7 @@
       if(containsChaos(input)){
         return {
           pass:false,
-          feedback:'👹 <q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again. 👹',
+          feedback:'<div class="chaos">👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
           chaos:true
         };
       }
