@@ -26,12 +26,12 @@
 const scenes = [
 {
   id: "grocery",
-  text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
+  text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Get her attention and politely ask for help finding the pens.",
   softeners: ["excuse me","hi","sorry","pardon me"]
 },
 {
   id: "peer",
-  text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music so you can study.",
+  text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You knock on your neighbor's door, and they answer with a friendly greeting. Politely ask them to turn down the music so that you can study.",
   softeners: ["please","maybe","just","a little","if you don't mind" , "a bit"]
 },
 {
@@ -72,14 +72,14 @@ function checkPass(scene, input){
   if(containsChaos(input)){
     return {
       pass:false,
-      feedback: "<q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.",
+      feedback: "<q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again!",
       chaos:true
     };
   }
 
   if(scene.id === "grocery"){
     if(!/could you|would you/.test(lower)){
-      feedbacks.push("Use <q>Could you</q> or <q>Would you</q>.");
+      feedbacks.push("Your request needs to be a little softer. Try asking with <q>Could you</q> or <q>Would you</q>.");
       pass=false;
     }
     if(!scene.softeners.some(s => lower.includes(s))){
@@ -90,11 +90,11 @@ function checkPass(scene, input){
 
   else if(scene.id==="peer"){
     if(!/could you|would you/.test(lower)){
-      feedbacks.push("Your phrasing needs work. Try asking with <q>could</q> or <q>would</q>.");
+      feedbacks.push("Your request needs to be a little softer. Try asking with <q>could</q> or <q>would</q>.");
       pass=false;
     }
     if(!scene.softeners.some(s => lower.includes(s))){
-      feedbacks.push("Try adding a softening word or phrase.");
+      feedbacks.push("This is a good start, but it might feel a bit demanding to some people. Try adding a softening word or phrase. Hint: What's the magic word?");
       pass=false;
     }
     if(!/i['’]?m trying to|i have|i need/i.test(lower)){
