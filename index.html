@@ -4,18 +4,75 @@
   <meta charset="UTF-8">
   <title>Polite Requests Game</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #scene { margin-bottom: 20px; }
-    #feedback { margin-top: 10px; color: blue; }
-    #result { margin-top: 10px; font-weight: bold; }
-    input, textarea { width: 80%; padding: 5px; font-family: Arial, sans-serif; }
-    button { padding: 5px 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #scene {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 600px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: opacity 0.3s ease;
+    }
+
+    #progress {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #2563eb;
+    }
+
+    #feedback {
+      margin-top: 12px;
+      color: #b45309; /* amber */
+    }
+
+    #result {
+      margin-top: 12px;
+      font-weight: bold;
+      color: #047857; /* green */
+    }
+
+    input, textarea {
+      width: 80%;
+      padding: 8px;
+      font-family: Arial, sans-serif;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
   </style>
 </head>
 <body>
-  <h1>Polite Requests Game</h1>
-
   <div id="scene">
+    <p id="progress"></p>
     <p id="scene-text"></p>
     <div id="input-container"></div>
     <button id="submit-btn">Submit</button>
@@ -43,12 +100,12 @@
     ];
 
     let currentScene = 0;
-
     const sceneTextEl = document.getElementById("scene-text");
     const feedbackEl = document.getElementById("feedback");
     const resultEl = document.getElementById("result");
     const submitBtn = document.getElementById("submit-btn");
     const inputContainer = document.getElementById("input-container");
+    const progressEl = document.getElementById("progress");
 
     const chaosKeywords = [
       "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
@@ -74,7 +131,7 @@
       if(containsChaos(input)){
         return {
           pass:false,
-          feedback:'<q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.',
+          feedback:'👹 <q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.',
           chaos:true
         };
       }
@@ -110,28 +167,26 @@
           feedbacks.push("Try asking with <q>could</q> or <q>would</q>.");
           pass=false;
         }
-
         if(!/hi|hello|dear|greetings/i.test(input)){
           feedbacks.push("Don't forget the greeting.");
           pass=false;
         }
-
         if(!/tried|checked|read|asked|looked/.test(lower)){
           feedbacks.push("Mention that you checked the syllabus, Moodle, or asked classmates.");
           pass=false;
         }
 
         const hasClosing = /thank you|thanks|sincerely|best|regards/i.test(lower);
-        const hasNameLine = /\n\s*[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\s*$/.test(input);
+        const hasName = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?$/.test(input.trim());
 
-        if(!hasClosing || !hasNameLine){
-          feedbacks.push("Include a closing (like 'Thank you') and your name on a new line.");
+        if(!hasClosing || !hasName){
+          feedbacks.push("Include a closing (like 'Thank you') and your name at the end.");
           pass=false;
         }
       }
 
+      // Smarter multi-error response
       let finalFeedback = "";
-
       if(feedbacks.length === 1){
         finalFeedback = feedbacks[0];
       }
@@ -147,21 +202,24 @@
     }
 
     function updateScene(){
-      sceneTextEl.textContent = scenes[currentScene].text;
-      feedbackEl.innerHTML = "";
-      resultEl.textContent = "";
+      sceneTextEl.style.opacity = 0;
 
-      if(scenes[currentScene].id === "professor"){
-        inputContainer.innerHTML = `
-          <textarea id="student-input" rows="6"
-          placeholder="Write your email here..."></textarea>
-        `;
-      } else {
-        inputContainer.innerHTML = `
-          <input type="text" id="student-input"
-          placeholder="Type what you would say here...">
-        `;
-      }
+      setTimeout(()=>{
+        const scene = scenes[currentScene];
+        sceneTextEl.textContent = scene.text;
+        feedbackEl.innerHTML = "";
+        resultEl.textContent = "";
+
+        progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
+
+        if(scene.id === "professor"){
+          inputContainer.innerHTML = `<textarea id="student-input" rows="6" placeholder="Write your email here..."></textarea>`;
+        } else {
+          inputContainer.innerHTML = `<input type="text" id="student-input" placeholder="Type what you would say here...">`;
+        }
+
+        sceneTextEl.style.opacity = 1;
+      }, 200);
     }
 
     submitBtn.addEventListener("click", ()=>{
@@ -182,7 +240,7 @@
       if(check.pass){
         resultEl.textContent="Success! You showed the perfect amount of politeness and passed this scene.";
         currentScene++;
-        if(currentScene<scenes.length){
+        if(currentScene < scenes.length){
           setTimeout(updateScene,1500);
         } else {
           resultEl.textContent+=" All scenes complete!";
