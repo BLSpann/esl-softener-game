@@ -6,11 +6,11 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+      background: #f0f9ff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
     }
 
@@ -20,7 +20,15 @@
       border-radius: 12px;
       width: 600px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      transition: opacity 0.3s ease;
+      transition: opacity 0.3s ease, background-color 0.3s ease;
+    }
+
+    #scene-header {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     #progress {
@@ -31,13 +39,13 @@
 
     #feedback {
       margin-top: 12px;
-      color: #b45309; /* amber */
+      color: #b45309; /* amber for minor feedback */
     }
 
     #result {
       margin-top: 12px;
       font-weight: bold;
-      color: #047857; /* green */
+      color: #047857; /* green for success */
     }
 
     #result.chaos {
@@ -65,6 +73,10 @@
       border: 1px solid #cbd5e1;
     }
 
+    textarea { resize: vertical; }
+
+    .professor-input { border-color: #10b981; } /* teal for professor */
+
     button {
       padding: 8px 16px;
       background-color: #3b82f6;
@@ -77,13 +89,8 @@
       margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #2563eb;
-    }
-
-    button:active {
-      transform: scale(0.98);
-    }
+    button:hover { background-color: #2563eb; }
+    button:active { transform: scale(0.98); }
 
     #footer-credit {
       margin-top: 15px;
@@ -96,6 +103,7 @@
 <body>
   <div id="scene">
     <p id="progress"></p>
+    <h2 id="scene-header"></h2>
     <p id="scene-text"></p>
     <div id="input-container"></div>
     <button id="submit-btn">Submit</button>
@@ -109,27 +117,35 @@
       {
         id: "grocery",
         text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
-        softeners: ["excuse me","hi","sorry","pardon me"]
+        softeners: ["excuse me","hi","sorry","pardon me"],
+        emoji: "🖊️",
+        bgColor: "#fff9db"
       },
       {
         id: "peer",
         text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.",
-        softeners: ["please","maybe","just","a little","if you don't mind"]
+        softeners: ["please","maybe","just","a little","if you don't mind"],
+        emoji: "🎵",
+        bgColor: "#dbf3ff"
       },
       {
         id: "professor",
         text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
-        softeners: []
+        softeners: [],
+        emoji: "✉️",
+        bgColor: "#e3f9e5"
       }
     ];
 
     let currentScene = 0;
+    const sceneHeaderEl = document.getElementById("scene-header");
     const sceneTextEl = document.getElementById("scene-text");
     const feedbackEl = document.getElementById("feedback");
     const resultEl = document.getElementById("result");
     const submitBtn = document.getElementById("submit-btn");
     const inputContainer = document.getElementById("input-container");
     const progressEl = document.getElementById("progress");
+    const sceneEl = document.getElementById("scene");
 
     const chaosKeywords = [
       "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
@@ -140,9 +156,7 @@
       const upper = input.toUpperCase();
       if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
       if(/([!?]{2,})/.test(input)) return true;
-      for(const kw of chaosKeywords){
-        if(upper.includes(kw)) return true;
-      }
+      for(const kw of chaosKeywords){ if(upper.includes(kw)) return true; }
       if(/\*.*\*|\[.*\]/.test(input)) return true;
       return false;
     }
@@ -155,71 +169,36 @@
       if(containsChaos(input)){
         return {
           pass:false,
-          feedback:'<div class="chaos">👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
+          feedback:'<div class="chaos">👹👹👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
           chaos:true
         };
       }
 
       if(scene.id === "grocery"){
-        if(!/could you|would you/.test(lower)){
-          feedbacks.push("Use 'Could you' or 'Would you'.");
-          pass=false;
-        }
-        if(!scene.softeners.some(s => lower.includes(s))){
-          feedbacks.push("Think of a polite way to get her attention, then try again.");
-          pass=false;
-        }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Think of a polite way to get her attention, then try again."); pass=false; }
       }
-
       else if(scene.id==="peer"){
-        if(!/could you|would you/.test(lower)){
-          feedbacks.push("Try asking with <q>could</q> or <q>would</q>.");
-          pass=false;
-        }
-        if(!scene.softeners.some(s => lower.includes(s))){
-          feedbacks.push("Try adding a softening word or phrase.");
-          pass=false;
-        }
-        if(!/i['’]?m trying to|i have|i need/.test(lower)){
-          feedbacks.push("Add a short explanation so your neighbor understands why you're asking.");
-          pass=false;
-        }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with <q>could</q> or <q>would</q>."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Try adding a softening word or phrase."); pass=false; }
+        if(!/i['’]?m trying to|i have|i need/.test(lower)){ feedbacks.push("Add a short explanation so your neighbor understands why you're asking."); pass=false; }
       }
-
       else if(scene.id==="professor"){
-        if(!/could you|would you/.test(lower)){
-          feedbacks.push("Try asking with <q>could</q> or <q>would</q>.");
-          pass=false;
-        }
-        if(!/hi|hello|dear|greetings/i.test(input)){
-          feedbacks.push("Don't forget the greeting.");
-          pass=false;
-        }
-        if(!/tried|checked|read|asked|looked/.test(lower)){
-          feedbacks.push("Mention that you checked the syllabus, Moodle, or asked classmates.");
-          pass=false;
-        }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with <q>could</q> or <q>would</q>."); pass=false; }
+        if(!/hi|hello|dear|greetings/i.test(input)){ feedbacks.push("Don't forget the greeting."); pass=false; }
+        if(!/tried|checked|read|asked|looked/.test(lower)){ feedbacks.push("Mention that you checked the syllabus, Moodle, or asked classmates."); pass=false; }
 
         const hasClosing = /thank you|thanks|sincerely|best|regards/i.test(lower);
         const hasName = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?$/.test(input.trim());
-
-        if(!hasClosing || !hasName){
-          feedbacks.push("Include a closing (like 'Thank you') and your name at the end.");
-          pass=false;
-        }
+        if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
       }
 
       // Smarter multi-error response
       let finalFeedback = "";
-      if(feedbacks.length === 1){
-        finalFeedback = feedbacks[0];
-      }
+      if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
-        if(scene.id === "professor"){
-          finalFeedback = "This email needs revision. Check your greeting, request phrasing, explanation of effort, and closing.";
-        } else {
-          finalFeedback = "Your request needs revision. Rethink your phrasing and level of politeness.";
-        }
+        if(scene.id === "professor"){ finalFeedback = "This email needs revision. Check your greeting, request phrasing, explanation of effort, and closing."; }
+        else{ finalFeedback = "Your request needs revision. Rethink your phrasing and level of politeness."; }
       }
 
       return {pass, feedback:finalFeedback, chaos:false};
@@ -231,6 +210,9 @@
 
       setTimeout(()=>{
         const scene = scenes[currentScene];
+        sceneEl.style.backgroundColor = scene.bgColor;
+
+        sceneHeaderEl.innerHTML = scene.emoji + " " + scene.id.charAt(0).toUpperCase() + scene.id.slice(1) + " Scene";
         sceneTextEl.textContent = scene.text;
         feedbackEl.innerHTML = "";
         resultEl.textContent = "";
@@ -238,7 +220,7 @@
         progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
 
         if(scene.id === "professor"){
-          inputContainer.innerHTML = `<textarea id="student-input" rows="6" placeholder="Write your email here..."></textarea>`;
+          inputContainer.innerHTML = `<textarea id="student-input" class="professor-input" rows="6" placeholder="Write your email here..."></textarea>`;
         } else {
           inputContainer.innerHTML = `<input type="text" id="student-input" placeholder="Type what you would say here...">`;
         }
@@ -264,13 +246,10 @@
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
-        resultEl.textContent="Success! You showed the perfect amount of politeness and passed this scene.";
+        resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
         currentScene++;
-        if(currentScene < scenes.length){
-          setTimeout(updateScene,1500);
-        } else {
-          resultEl.textContent+=" All scenes complete!";
-        }
+        if(currentScene < scenes.length){ setTimeout(updateScene,1500); }
+        else{ resultEl.textContent+=" All scenes complete!"; }
       }
     });
 
