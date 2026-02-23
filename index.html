@@ -36,7 +36,7 @@ const scenes = [
 },
 {
   id: "professor",
-  text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
+  text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, to show that you respect their time, and to have a sign-off that includes your name.",
   softeners: []
 }
 ];
@@ -83,7 +83,7 @@ function checkPass(scene, input){
       pass=false;
     }
     if(!scene.softeners.some(s => lower.includes(s))){
-      feedbacks.push("Think of a polite way to get her attention, then try again.");
+      feedbacks.push("The employee is startled by the sudden question. She jumps and bumps the shelf. Everything on it crashes to the ground, and she gives you an angry look. Think of a polite way to get her attention, then try again.");
       pass=false;
     }
   }
@@ -98,7 +98,7 @@ function checkPass(scene, input){
       pass=false;
     }
     if(!/i['’]?m trying to|i have|i need/i.test(lower)){
-      feedbacks.push("Add a short explanation so they understand why you're asking.");
+      feedbacks.push("Your neighbor looks annoyed. They tell you they aren't breaking any rules and will keep enjoying their music until quiet hours start. Try adding a short explanation so they understand why you're asking.");
       pass=false;
     }
   }
