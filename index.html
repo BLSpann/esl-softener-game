@@ -22,100 +22,146 @@
     <div id="result"></div>
   </div>
 
-  <script>
-    const scenes = [
-      {
-        id: "grocery",
-        text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
-        softeners: ["excuse me","hi","sorry","pardon me"]
-      },
-      {
-        id: "peer",
-        text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.",
-        softeners: ["please","maybe","just","a little","if you don't mind"]
-      },
-      {
-        id: "professor",
-        text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
-        softeners: []
-      }
-    ];
+<script>
+const scenes = [
+{
+  id: "grocery",
+  text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
+  softeners: ["excuse me","hi","sorry","pardon me"]
+},
+{
+  id: "peer",
+  text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.",
+  softeners: ["please","maybe","just","a little","if you don't mind"]
+},
+{
+  id: "professor",
+  text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
+  softeners: []
+}
+];
 
-    let currentScene = 0;
+let currentScene = 0;
 
-    const sceneTextEl = document.getElementById("scene-text");
-    const inputEl = document.getElementById("student-input");
-    const feedbackEl = document.getElementById("feedback");
-    const resultEl = document.getElementById("result");
-    const submitBtn = document.getElementById("submit-btn");
+const sceneTextEl = document.getElementById("scene-text");
+const inputEl = document.getElementById("student-input");
+const feedbackEl = document.getElementById("feedback");
+const resultEl = document.getElementById("result");
+const submitBtn = document.getElementById("submit-btn");
 
-    const chaosKeywords = ["NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO","STUPID","IDIOT","DUMB","SCREW YOU," "do it," "right now," "asshole," "shit," "bitch," "damn," "fuck," "kill,""dumb," ];
+const chaosKeywords = [
+"NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
+"STUPID","IDIOT","DUMB","SCREW YOU",
+"DO IT","RIGHT NOW","ASSHOLE","SHIT","BITCH","DAMN","FUCK","KILL"
+];
 
-    function containsChaos(input){
-      const upper = input.toUpperCase();
-      if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
-      if(/([!?]{2,})/.test(input)) return true;
-      for(const kw of chaosKeywords){ if(upper.includes(kw)) return true; }
-      if(/\*.*\*|\[.*\]/.test(input)) return true;
-      return false;
+function containsChaos(input){
+  const upper = input.toUpperCase();
+  if(input && input === input.toUpperCase() && /[A-Z]/.test(input)) return true;
+  if(/([!?]{2,})/.test(input)) return true;
+  for(const kw of chaosKeywords){ if(upper.includes(kw)) return true; }
+  if(/\*.*\*|\[.*\]/.test(input)) return true;
+  return false;
+}
+
+function checkPass(scene, input){
+  const lower = input.toLowerCase();
+  const feedbacks = [];
+  let pass = true;
+
+  if(containsChaos(input)){
+    return {
+      pass:false,
+      feedback: "<q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.",
+      chaos:true
+    };
+  }
+
+  if(scene.id === "grocery"){
+    if(!/could you|would you/.test(lower)){
+      feedbacks.push("Use <q>Could you</q> or <q>Would you</q>.");
+      pass=false;
     }
-
-    function checkPass(scene, input){
-      const lower = input.toLowerCase();
-      const feedbacks = [];
-      let pass = true;
-
-      if(containsChaos(input)){
-        return {pass:false, feedback: <q>Boo-hoo-hoo! Waaaah!</q>Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.", chaos:true};
-      }
-
-      if(scene.id === "grocery"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Think of a polite way to get her attention, then try again."); pass=false; }
-        const sc = scene.softeners.filter(s => lower.includes(s)).length;
-        if(sc>1){ feedbacks.push("The employee gives you a strange look. <q>Ummm . . . okay. Just follow me.</q> Oops. That was a little <em>too</em> polite for a small request. But you got your new pen!"); }
-      } else if(scene.id==="peer"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Your phrasing needs a little work. Try asking with <q>could</q> or <q>would</q>."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Try adding a softening word or phrase. The <q>magic word</q> is always a good choice!"); pass=false; }
-        if(!/i['’]?m trying to|i have|i need/i.test(lower)){ feedbacks.push("Your neighbor thinks you're just ruining their fun. It will make a big difference if they understand why you're asking. Try adding a short explanation."); pass=false; }
-        const sc = scene.softeners.filter(s => lower.includes(s)).length;
-        if(sc>1){ feedbacks.push("Your neighbor looks surprised. <q>Dude, why are you glazing me? It's not that serious.</q> They turn down the music. <q>Good luck on your test. And try to relax a bit.</q> Later, you find out that <q>glazing</q"> means giving someone too much praise and respect. Remember, you don't need to be formal with other students."); }
-      } else if(scene.id==="professor"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Your phrasing needs a little work. Try asking with <q>could</q> or <q>would</q>."); pass=false; }
-        if(!/hi|hello|greetings|dear/i.test(input)){ feedbacks.push("Don't forget the greeting! Even if you ask politely, the request will seem demanding without it."); pass=false; }
-        if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){ feedbacks.push("Remember to show that you respect your professor's time. Include a sentence to show that you tried to solve the problem yourself. (Hint: Try mentioning that you checked Moodle and the syllabus.); pass=false; }
-        if(!/thank/i.test(input)){ feedbacks.push("Don't forget to thank your professor!"); pass=false; }
-        if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){ feedbacks.push("You forgot something! Make sure you sign off and include your name at the end."); pass=false; }
-      }
-
-      return {pass, feedback:feedbacks.join(" "), chaos:false};
+    if(!scene.softeners.some(s => lower.includes(s))){
+      feedbacks.push("Think of a polite way to get her attention, then try again.");
+      pass=false;
     }
+  }
 
-    function updateScene(){
-      sceneTextEl.textContent = scenes[currentScene].text;
-      inputEl.value="";
-      feedbackEl.textContent="";
-      resultEl.textContent="";
+  else if(scene.id==="peer"){
+    if(!/could you|would you/.test(lower)){
+      feedbacks.push("Your phrasing needs work. Try asking with <q>could</q> or <q>would</q>.");
+      pass=false;
     }
+    if(!scene.softeners.some(s => lower.includes(s))){
+      feedbacks.push("Try adding a softening word or phrase.");
+      pass=false;
+    }
+    if(!/i['’]?m trying to|i have|i need/i.test(lower)){
+      feedbacks.push("Add a short explanation so they understand why you're asking.");
+      pass=false;
+    }
+  }
 
-    submitBtn.addEventListener("click", ()=>{
-      const input = inputEl.value.trim();
-      if(!input) return;
-      const scene = scenes[currentScene];
-      const check = checkPass(scene,input);
+  else if(scene.id==="professor"){
+    if(!/could you|would you/.test(lower)){
+      feedbacks.push("Try asking with <q>could</q> or <q>would</q>.");
+      pass=false;
+    }
+    if(!/hi|hello|greetings|dear/i.test(input)){
+      feedbacks.push("Don't forget the greeting.");
+      pass=false;
+    }
+    if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){
+      feedbacks.push("Show that you tried first (mention checking Moodle or the syllabus).");
+      pass=false;
+    }
+    if(!/thank/i.test(input)){
+      feedbacks.push("Don't forget to thank your professor.");
+      pass=false;
+    }
+    if(!/sincerely|best|regards/i.test(input)){
+      feedbacks.push("Include a sign-off with your name.");
+      pass=false;
+    }
+  }
 
-      if(check.chaos){ resultEl.textContent = check.feedback; return; }
-      feedbackEl.textContent = check.feedback;
+  return {pass, feedback:feedbacks.join(" "), chaos:false};
+}
 
-      if(check.pass){
-        resultEl.textContent="Success! You showed the perfect amount of politeness and passed this scene.";
-        currentScene++;
-        if(currentScene<scenes.length){ setTimeout(updateScene,1500); }
-        else{ resultEl.textContent+=" All scenes complete!"; }
-      }
-    });
+function updateScene(){
+  sceneTextEl.textContent = scenes[currentScene].text;
+  inputEl.value="";
+  feedbackEl.innerHTML="";
+  resultEl.textContent="";
+}
 
-    updateScene();
-  </script>
+submitBtn.addEventListener("click", ()=>{
+  const input = inputEl.value.trim();
+  if(!input) return;
+
+  const scene = scenes[currentScene];
+  const check = checkPass(scene,input);
+
+  if(check.chaos){
+    resultEl.innerHTML = check.feedback;
+    return;
+  }
+
+  feedbackEl.innerHTML = check.feedback;
+
+  if(check.pass){
+    resultEl.textContent="Success! You showed the perfect amount of politeness and passed this scene.";
+    currentScene++;
+    if(currentScene<scenes.length){
+      setTimeout(updateScene,1500);
+    } else {
+      resultEl.textContent+=" All scenes complete!";
+    }
+  }
+});
+
+updateScene();
+</script>
 </body>
 </html>
