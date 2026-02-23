@@ -26,17 +26,17 @@
     const scenes = [
       {
         id: "grocery",
-        text: "You are at Blair's to buy a new pen and cannot find the school supplies. You see an employee stocking shelves and walk over to ask for help. She doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
+        text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
         softeners: ["excuse me","hi","sorry","pardon me"]
       },
       {
         id: "peer",
-        text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You want to do well on the test to impress your favorite professor, so you walk over and knock on your neighbor's door. They open the door and give you a friendly greeting. Write what you will say to ask them to turn down the music so you can study.",
+        text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.",
         softeners: ["please","maybe","just","a little","if you don't mind"]
       },
       {
         id: "professor",
-        text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You ask other students in the class, but they can't find the instructions either. Write an email to your professor asking for the instructions. Don't forget--when you email a professor to ask for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
+        text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
         softeners: []
       }
     ];
@@ -49,7 +49,7 @@
     const resultEl = document.getElementById("result");
     const submitBtn = document.getElementById("submit-btn");
 
-    const chaosKeywords = ["NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO","STUPID","IDIOT","DUMB","SCREW YOU"];
+    const chaosKeywords = ["NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO","STUPID","IDIOT","DUMB","SCREW YOU," "do it," "right now," "asshole," "shit," "bitch," "damn," "fuck," "kill,""dumb," ];
 
     function containsChaos(input){
       const upper = input.toUpperCase();
@@ -66,26 +66,26 @@
       let pass = true;
 
       if(containsChaos(input)){
-        return {pass:false, feedback:"Chaos gremlin! Try being polite and clear.", chaos:true};
+        return {pass:false, feedback: <q>Boo-hoo-hoo! Waaaah!</q>Chaos gremlin! Where are your manners? Apologize for your rude behavior and try again.", chaos:true};
       }
 
       if(scene.id === "grocery"){
         if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Add a polite attention-getting word."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Think of a polite way to get her attention, then try again."); pass=false; }
         const sc = scene.softeners.filter(s => lower.includes(s)).length;
-        if(sc>1){ feedbacks.push("You used many polite words — employee looks puzzled but helps anyway."); }
+        if(sc>1){ feedbacks.push("The employee gives you a strange look. <q>Ummm . . . okay. Just follow me.</q> Oops. That was a little <em>too</em> polite for a small request. But you got your new pen!"); }
       } else if(scene.id==="peer"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Add a polite softener."); pass=false; }
-        if(!/i['’]?m trying to|i have|i need/i.test(lower)){ feedbacks.push("Include a reason why."); pass=false; }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Your phrasing needs a little work. Try asking with <q>could</q> or <q>would</q>."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Try adding a softening word or phrase. The <q>magic word</q> is always a good choice!"); pass=false; }
+        if(!/i['’]?m trying to|i have|i need/i.test(lower)){ feedbacks.push("Your neighbor thinks you're just ruining their fun. It will make a big difference if they understand why you're asking. Try adding a short explanation."); pass=false; }
         const sc = scene.softeners.filter(s => lower.includes(s)).length;
-        if(sc>1){ feedbacks.push("You used many polite words — neighbor looks puzzled but helps anyway."); }
+        if(sc>1){ feedbacks.push("Your neighbor looks surprised. <q>Dude, why are you glazing me? It's not that serious.</q> They turn down the music. <q>Good luck on your test. And try to relax a bit.</q> Later, you find out that <q>glazing</q"> means giving someone too much praise and respect. Remember, you don't need to be formal with other students."); }
       } else if(scene.id==="professor"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Make a question using 'Could you' or 'Would you'."); pass=false; }
-        if(!/hi|hello|greetings|dear/i.test(input)){ feedbacks.push("Include a greeting like 'Hi' or 'Dear'."); pass=false; }
-        if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){ feedbacks.push("Show you tried first, e.g., 'I looked at the syllabus'."); pass=false; }
-        if(!/thank/i.test(input)){ feedbacks.push("Include a 'Thank you'."); pass=false; }
-        if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){ feedbacks.push("Include a sign-off or your name."); pass=false; }
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Your phrasing needs a little work. Try asking with <q>could</q> or <q>would</q>."); pass=false; }
+        if(!/hi|hello|greetings|dear/i.test(input)){ feedbacks.push("Don't forget the greeting! Even if you ask politely, the request will seem demanding without it."); pass=false; }
+        if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){ feedbacks.push("Remember to show that you respect your professor's time. Include a sentence to show that you tried to solve the problem yourself. (Hint: Try mentioning that you checked Moodle and the syllabus.); pass=false; }
+        if(!/thank/i.test(input)){ feedbacks.push("Don't forget to thank your professor!"); pass=false; }
+        if(!/sincerely|best|regards/i.test(input) && !/^[\s\S]*\n.*$/.test(input)){ feedbacks.push("You forgot something! Make sure you sign off and include your name at the end."); pass=false; }
       }
 
       return {pass, feedback:feedbacks.join(" "), chaos:false};
@@ -108,7 +108,7 @@
       feedbackEl.textContent = check.feedback;
 
       if(check.pass){
-        resultEl.textContent="Success! You passed this scene.";
+        resultEl.textContent="Success! You showed the perfect amount of politeness and passed this scene.";
         currentScene++;
         if(currentScene<scenes.length){ setTimeout(updateScene,1500); }
         else{ resultEl.textContent+=" All scenes complete!"; }
