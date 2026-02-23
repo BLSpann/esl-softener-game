@@ -94,7 +94,7 @@ function checkPass(scene, input){
       pass=false;
     }
     if(!scene.softeners.some(s => lower.includes(s))){
-      feedbacks.push("This is a good start, but it might feel a bit demanding to some people. Try adding a softening word or phrase. Hint: What's the magic word?");
+      feedbacks.push("Try adding a softening word or phrase. What's the magic word?");
       pass=false;
     }
     if(!/i['’]?m trying to|i have|i need/i.test(lower)){
@@ -105,15 +105,15 @@ function checkPass(scene, input){
 
   else if(scene.id==="professor"){
     if(!/could you|would you/.test(lower)){
-      feedbacks.push("Try asking with <q>could</q> or <q>would</q>.");
+      feedbacks.push("Your request needs to be a bit softer. Try asking with <q>could</q> or <q>would</q>.");
       pass=false;
     }
     if(!/hi|hello|greetings|dear/i.test(input)){
-      feedbacks.push("Don't forget the greeting.");
+      feedbacks.push("Don't forget the greeting. If it's missing, even a polite question might seem demanding.");
       pass=false;
     }
     if(!/tried|read|attempt|asked|looked at|looked for/i.test(lower)){
-      feedbacks.push("Show that you tried first (mention checking Moodle or the syllabus).");
+      feedbacks.push("Explaining that you tried to solve the problem for yourself will show your professor that you respect their time. Try mentioning that you checked Moodle and the syllabus).");
       pass=false;
     }
     if(!/thank/i.test(input)){
