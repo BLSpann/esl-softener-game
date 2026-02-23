@@ -83,7 +83,7 @@ function checkPass(scene, input){
       pass=false;
     }
     if(!scene.softeners.some(s => lower.includes(s))){
-      feedbacks.push("The employee is startled by the sudden question. She jumps and bumps the shelf. Everything on it crashes to the ground, and she gives you an angry look. Think of a polite way to get her attention, then try again.");
+      feedbacks.push("The employee jumps her arm hits the shelf. Everything on it crashes to the ground, and she gives you an angry look. Looks like you scared her. Think of a polite way to get her attention, then try again.");
       pass=false;
     }
   }
@@ -98,7 +98,7 @@ function checkPass(scene, input){
       pass=false;
     }
     if(!/i['’]?m trying to|i have|i need/i.test(lower)){
-      feedbacks.push("Your neighbor looks annoyed. They tell you they aren't breaking any rules and will keep enjoying their music until quiet hours start. Try adding a short explanation so they understand why you're asking.");
+      feedbacks.push("Your neighbor is annoyed. They say they aren't breaking any rules and will keep enjoying their music until quiet hours start. The door closes in your face, and the music gets louder. Try adding a short explanation so they understand why you're asking.");
       pass=false;
     }
   }
