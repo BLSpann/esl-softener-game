@@ -15,12 +15,26 @@
     }
 
     #scene {
+      position: relative;
       background: white;
       padding: 30px;
       border-radius: 12px;
       width: 600px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       transition: opacity 0.3s ease, background-color 0.3s ease;
+      overflow: hidden;
+      border-top: 6px solid #000;
+    }
+
+    #scene::before {
+      content: attr(data-icon);
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 100px;
+      opacity: 0.1;
+      pointer-events: none;
+      user-select: none;
     }
 
     #scene-header {
@@ -86,11 +100,16 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      transition: all 0.2s ease;
       margin-top: 10px;
     }
 
-    button:hover { background-color: #2563eb; }
+    button:hover {
+      background-color: #2563eb;
+      box-shadow: 0 0 8px #2563eb;
+      transform: translateY(-2px);
+    }
+
     button:active { transform: scale(0.98); }
 
     #footer-credit {
@@ -102,7 +121,7 @@
   </style>
 </head>
 <body>
-  <div id="scene">
+  <div id="scene" data-icon="">
     <p id="progress"></p>
     <h2 id="scene-header"></h2>
     <p id="scene-text"></p>
@@ -120,7 +139,7 @@
         text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
         softeners: ["excuse me","hi","sorry","pardon me"],
         emoji: "🖊️",
-        bgColor: "#fff4cc"  // pale yellow-orange
+        bgColor: "#fff4cc"
       },
       {
         id: "peer",
@@ -194,7 +213,6 @@
         if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
       }
 
-      // Smarter multi-error response
       let finalFeedback = "";
       if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
@@ -207,7 +225,7 @@
 
     function updateScene(){
       resultEl.classList.remove("chaos");
-      resultEl.style.color = "#047857";  // reset success color
+      resultEl.style.color = "#047857";
       resultEl.style.fontWeight = "bold";
       resultEl.style.fontSize = "16px";
 
@@ -216,6 +234,7 @@
       setTimeout(()=>{
         const scene = scenes[currentScene];
         sceneEl.style.backgroundColor = scene.bgColor;
+        sceneEl.dataset.icon = scene.emoji;
 
         sceneHeaderEl.innerHTML = scene.emoji + " " + scene.id.charAt(0).toUpperCase() + scene.id.slice(1) + " Scene";
         sceneTextEl.textContent = scene.text;
@@ -251,9 +270,8 @@
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
-        // Consistent success styling
         resultEl.classList.remove("chaos");
-        resultEl.style.color = "#047857";  // green
+        resultEl.style.color = "#047857";
         resultEl.style.fontWeight = "bold";
         resultEl.style.fontSize = "16px";
         resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
