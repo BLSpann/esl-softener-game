@@ -16,7 +16,7 @@
   <h1>Polite Requests Game</h1>
   <div id="scene">
     <p id="scene-text"></p>
-    <input type="text" id="student-input" placeholder="Type your response here...">
+    <input type="text" id="student-input" placeholder="Type what you would say here...">
     <button id="submit-btn">Submit</button>
     <div id="feedback"></div>
     <div id="result"></div>
@@ -26,17 +26,17 @@
     const scenes = [
       {
         id: "grocery",
-        text: "You are at the grocery store and cannot find baking soda. An employee is stocking shelves.",
+        text: "You are at Blair's to buy a new pen and cannot find the school supplies. You see an employee stocking shelves and walk over to ask for help. She doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
         softeners: ["excuse me","hi","sorry","pardon me"]
       },
       {
         id: "peer",
-        text: "You are trying to study in your dorm, but neighbors are playing music loudly.",
+        text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You want to do well on the test to impress your favorite professor, so you walk over and knock on your neighbor's door. They open the door and give you a friendly greeting. Write what you will say to ask them to turn down the music so you can study.",
         softeners: ["please","maybe","just","a little","if you don't mind"]
       },
       {
         id: "professor",
-        text: "Write an email to your professor requesting help. Include greeting, request, evidence you tried, thank you, and sign-off.",
+        text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You ask other students in the class, but they can't find the instructions either. Write an email to your professor asking for the instructions. Don't forget--when you email a professor to ask for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
         softeners: []
       }
     ];
