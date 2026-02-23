@@ -46,6 +46,7 @@
       margin-top: 12px;
       font-weight: bold;
       color: #047857; /* green for success */
+      font-size: 16px;
     }
 
     #result.chaos {
@@ -169,7 +170,7 @@
       if(containsChaos(input)){
         return {
           pass:false,
-          feedback:'<div class="chaos">👹👹👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
+          feedback:'<div class="chaos">👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
           chaos:true
         };
       }
@@ -206,6 +207,10 @@
 
     function updateScene(){
       resultEl.classList.remove("chaos");
+      resultEl.style.color = "#047857";  // reset success color
+      resultEl.style.fontWeight = "bold";
+      resultEl.style.fontSize = "16px";
+
       sceneTextEl.style.opacity = 0;
 
       setTimeout(()=>{
@@ -246,7 +251,13 @@
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
+        // Consistent success styling
+        resultEl.classList.remove("chaos");
+        resultEl.style.color = "#047857";  // green
+        resultEl.style.fontWeight = "bold";
+        resultEl.style.fontSize = "16px";
         resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
+
         currentScene++;
         if(currentScene < scenes.length){ setTimeout(updateScene,1500); }
         else{ resultEl.textContent+=" All scenes complete!"; }
