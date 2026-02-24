@@ -39,22 +39,23 @@
 
     #feedback {
       margin-top: 12px;
-      color: #b45309;
+      color: #b45309; /* amber for minor feedback */
     }
 
     #result {
       margin-top: 12px;
       font-weight: bold;
       color: #047857; /* green for success */
-      font-size: 16px;
     }
 
-    #result.chaos {
-      font-size: 48px;
+    #chaos-container {
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 64px;
       color: #b91c1c;
-      display: block;
-      animation: shake 0.5s ease-in-out 0s 2;
       text-align: center;
+      display: none;
+      animation: shake 0.5s ease-in-out 0s 2;
     }
 
     @keyframes shake {
@@ -75,7 +76,8 @@
     }
 
     textarea { resize: vertical; }
-    .professor-input { border-color: #10b981; }
+
+    .professor-input { border-color: #10b981; } /* teal for professor */
 
     button {
       padding: 8px 16px;
@@ -109,6 +111,7 @@
     <button id="submit-btn">Submit</button>
     <div id="feedback"></div>
     <div id="result"></div>
+    <div id="chaos-container"></div>
     <div id="footer-credit">Game logic developed with assistance from ChatGPT (OpenAI).</div>
   </div>
 
@@ -142,6 +145,7 @@
     const sceneTextEl = document.getElementById("scene-text");
     const feedbackEl = document.getElementById("feedback");
     const resultEl = document.getElementById("result");
+    const chaosEl = document.getElementById("chaos-container");
     const submitBtn = document.getElementById("submit-btn");
     const inputContainer = document.getElementById("input-container");
     const progressEl = document.getElementById("progress");
@@ -169,7 +173,7 @@
       if(containsChaos(input)){
         return {
           pass:false,
-          feedback:'<div class="chaos">👹</div><div><q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.</div>',
+          feedback:'<q>Boo-hoo-hoo! Waaaah!</q> Chaos gremlin! Where are your manners? Apologize and try again.',
           chaos:true
         };
       }
@@ -193,6 +197,7 @@
         if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
       }
 
+      // Smarter multi-error response
       let finalFeedback = "";
       if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
@@ -204,7 +209,8 @@
     }
 
     function updateScene(){
-      resultEl.classList.remove("chaos");
+      resultEl.textContent = "";
+      chaosEl.style.display = "none";
       sceneTextEl.style.opacity = 0;
 
       setTimeout(()=>{
@@ -215,8 +221,6 @@
         sceneTextEl.textContent = scene.text;
         feedbackEl.innerHTML = "";
         resultEl.textContent = "";
-        resultEl.style.color = "#047857"; // reset green
-        resultEl.style.fontSize = "16px"; // reset size
 
         progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
 
@@ -239,23 +243,20 @@
       const check = checkPass(scene,input);
 
       if(check.chaos){
-        resultEl.innerHTML = check.feedback;
-        resultEl.classList.add("chaos");
+        chaosEl.innerHTML = "👹<br>" + check.feedback;
+        chaosEl.style.display = "block";
+        resultEl.textContent = "";
         return;
       }
 
+      chaosEl.style.display = "none";
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
-        // ensure success text formatting
-        resultEl.classList.remove("chaos");
-        resultEl.style.color = "#047857"; 
-        resultEl.style.fontSize = "16px";
-        resultEl.textContent = "✅ Success! You showed the perfect amount of politeness and passed this scene.";
-
+        resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
         currentScene++;
         if(currentScene < scenes.length){ setTimeout(updateScene,1500); }
-        else{ resultEl.textContent += " All scenes complete!"; }
+        else{ resultEl.textContent+=" All scenes complete!"; }
       }
     });
 
