@@ -149,19 +149,27 @@
       setTimeout(() => sparkleEl.style.display = "none", 1000);
     }
 
-    function updateScene() {
-      const scene = scenes[currentScene];
-      sceneEl.style.backgroundColor = scene.bgColor;
-      sceneEl.dataset.icon = scene.emoji;
-      feedbackEl.textContent = "";
-      resultEl.textContent = "";
+   function updateScene() {
+  const scene = scenes[currentScene];
 
-      if(scene.id==="professor"){
-        inputContainer.innerHTML = `<textarea id="student-input" rows="6"></textarea>`;
-      } else {
-        inputContainer.innerHTML = `<input id="student-input" type="text">`;
-      }
-    }
+  sceneEl.style.backgroundColor = scene.bgColor;
+  sceneEl.dataset.icon = scene.emoji;
+
+  // ADD THESE:
+  document.getElementById("scene-header").textContent = scene.id;
+  document.getElementById("scene-text").textContent = scene.text;
+  document.getElementById("progress").textContent =
+    "Scene " + (currentScene + 1) + " of " + scenes.length;
+
+  feedbackEl.textContent = "";
+  resultEl.textContent = "";
+
+  if(scene.id==="professor"){
+    inputContainer.innerHTML = `<textarea id="student-input" rows="6"></textarea>`;
+  } else {
+    inputContainer.innerHTML = `<input id="student-input" type="text">`;
+  }
+}
 
     document.getElementById("submit-btn").addEventListener("click", () => {
       const input = document.getElementById("student-input").value.trim();
