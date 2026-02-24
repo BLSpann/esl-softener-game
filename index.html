@@ -20,10 +20,10 @@
       padding: 30px;
       border-radius: 12px;
       width: 600px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-top: 6px solid #000;
+      box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
       transition: opacity 0.3s ease, background-color 0.3s ease;
       overflow: hidden;
-      border-top: 6px solid #000;
     }
 
     #scene::before {
@@ -37,39 +37,11 @@
       user-select: none;
     }
 
-    #scene-header {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    #progress {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #2563eb;
-    }
-
-    #feedback {
-      margin-top: 12px;
-      color: #b45309; /* amber for minor feedback */
-    }
-
-    #result {
-      margin-top: 12px;
-      font-weight: bold;
-      color: #047857; /* green for success */
-      font-size: 16px;
-    }
-
-    #result.chaos {
-      font-size: 64px;
-      color: #b91c1c;
-      display: block;
-      animation: shake 0.5s ease-in-out 0s 2;
-      text-align: center;
-    }
+    #scene-header { font-size: 1.5em; margin-bottom: 10px; }
+    #progress { font-weight: bold; margin-bottom: 10px; color: #2563eb; }
+    #feedback { margin-top: 12px; color: #b45309; }
+    #result { margin-top: 12px; font-weight: bold; color: #047857; font-size: 16px; }
+    #result.chaos { font-size: 64px; color: #b91c1c; text-align: center; animation: shake 0.5s ease-in-out 0s 2; }
 
     @keyframes shake {
       0% { transform: translateX(0); }
@@ -89,7 +61,6 @@
     }
 
     textarea { resize: vertical; }
-
     .professor-input { border-color: #10b981; }
 
     button {
@@ -104,20 +75,10 @@
       margin-top: 10px;
     }
 
-    button:hover {
-      background-color: #2563eb;
-      box-shadow: 0 0 8px #2563eb;
-      transform: translateY(-2px);
-    }
-
+    button:hover { background-color: #2563eb; box-shadow: 0 0 8px #2563eb; transform: translateY(-2px); }
     button:active { transform: scale(0.98); }
 
-    #footer-credit {
-      margin-top: 15px;
-      font-size: 0.8em;
-      color: #555;
-      text-align: center;
-    }
+    #footer-credit { margin-top: 15px; font-size: 0.8em; color: #555; text-align: center; }
   </style>
 </head>
 <body>
@@ -134,27 +95,9 @@
 
   <script>
     const scenes = [
-      {
-        id: "grocery",
-        text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.",
-        softeners: ["excuse me","hi","sorry","pardon me"],
-        emoji: "🖊️",
-        bgColor: "#fff4cc"
-      },
-      {
-        id: "peer",
-        text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.",
-        softeners: ["please","maybe","just","a little","a bit","if you don't mind"],
-        emoji: "🎵",
-        bgColor: "#dbf3ff"
-      },
-      {
-        id: "professor",
-        text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.",
-        softeners: [],
-        emoji: "✉️",
-        bgColor: "#e3f9e5"
-      }
+      { id: "grocery", text: "You are at Blair's to buy a new pen, but you can't find the school supplies. You see an employee stocking shelves. You walk over to ask for help, but she doesn't notice you. Write what you will say to get her attention and ask for help finding the pens.", softeners: ["excuse me","hi","sorry","pardon me"], emoji: "🖊️", bgColor: "#fff4cc" },
+      { id: "peer", text: "You are trying to study for your ESL class, but your neighbors are playing music so loudly that you can't think! You really want to get an A and impress your favorite professor! You go and knock on your neighbor's door, and they answer with a friendly greeting. Write what you will say to request that they turn down the music a bit so that you can study.", softeners: ["please","maybe","just","a little","a bit","if you don't mind"], emoji: "🎵", bgColor: "#dbf3ff" },
+      { id: "professor", text: "You can't find the instructions for an essay assignment. You already checked the syllabus and Moodle. You talk to other students in the class, and they can't find the instructions either. Write an email to your professor to ask for the instructions. Don't forget that when you email a professor for help, you need to have a greeting, show that you respect their time, and have a sign-off that includes your name.", softeners: [], emoji: "✉️", bgColor: "#e3f9e5" }
     ];
 
     let currentScene = 0;
@@ -167,10 +110,7 @@
     const progressEl = document.getElementById("progress");
     const sceneEl = document.getElementById("scene");
 
-    const chaosKeywords = [
-      "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
-      "STUPID","IDIOT","DUMB","SCREW YOU","ASSHOLE","SHIT","BITCH","DAMN","FUCK","KILL"
-    ];
+    const chaosKeywords = ["NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO","STUPID","IDIOT","DUMB","SCREW YOU","ASSHOLE","SHIT","BITCH","DAMN","FUCK","KILL"];
 
     function containsChaos(input){
       const upper = input.toUpperCase();
@@ -187,40 +127,32 @@
       let pass = true;
 
       if(containsChaos(input)){
-        return {
-          pass:false,
-          feedback:'<div class="chaos">👹</div><div>Boo-hoo-hoo! Waaaah! Chaos gremlin! Where are your manners? Apologize and try again.</div>',
-          chaos:true
-        };
+        return { pass:false, feedback:'<div class="chaos">👹</div><div>Boo-hoo-hoo! Waaaah! Chaos gremlin! Where are your manners? Apologize and try again.</div>', chaos:true };
       }
 
-      if(scene.id === "grocery"){
+      if(scene.id==="grocery"){
         if(!/could you|would you/.test(lower)){ feedbacks.push("Use 'Could you' or 'Would you'."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Think of a polite way to get her attention, then try again."); pass=false; }
-      }
-      else if(scene.id==="peer"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with <q>could</q> or <q>would</q>."); pass=false; }
-        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Try adding a softening word or phrase."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Think of a polite way to get her attention."); pass=false; }
+      } else if(scene.id==="peer"){
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with 'could' or 'would'."); pass=false; }
+        if(!scene.softeners.some(s => lower.includes(s))){ feedbacks.push("Add a softening word or phrase."); pass=false; }
         if(!/i['’]?m trying to|i have|i need/.test(lower)){ feedbacks.push("Add a short explanation so your neighbor understands why you're asking."); pass=false; }
-      }
-      else if(scene.id==="professor"){
-        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with <q>could</q> or <q>would</q>."); pass=false; }
+      } else if(scene.id==="professor"){
+        if(!/could you|would you/.test(lower)){ feedbacks.push("Try asking with 'could' or 'would'."); pass=false; }
         if(!/hi|hello|dear|greetings/i.test(input)){ feedbacks.push("Don't forget the greeting."); pass=false; }
         if(!/tried|checked|read|asked|looked/.test(lower)){ feedbacks.push("Mention that you checked the syllabus, Moodle, or asked classmates."); pass=false; }
-
         const hasClosing = /thank you|thanks|sincerely|best|regards/i.test(lower);
         const hasName = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?$/.test(input.trim());
-        if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
+        if(!hasClosing || !hasName){ feedbacks.push("Include a closing and your name at the end."); pass=false; }
       }
 
       let finalFeedback = "";
       if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
-        if(scene.id === "professor"){ finalFeedback = "This email needs revision. Check your greeting, request phrasing, explanation of effort, and closing."; }
-        else{ finalFeedback = "Your request needs revision. Rethink your phrasing and level of politeness."; }
+        finalFeedback = (scene.id==="professor") ? "This email needs revision. Check greeting, phrasing, explanation of effort, and closing." : "Your request needs revision. Rethink phrasing and politeness.";
       }
 
-      return {pass, feedback:finalFeedback, chaos:false};
+      return { pass, feedback: finalFeedback, chaos:false };
     }
 
     function updateScene(){
@@ -229,35 +161,26 @@
       resultEl.style.fontWeight = "bold";
       resultEl.style.fontSize = "16px";
 
-      sceneTextEl.style.opacity = 0;
+      const scene = scenes[currentScene];
+      sceneEl.style.backgroundColor = scene.bgColor;
+      sceneEl.dataset.icon = scene.emoji;
+      sceneHeaderEl.innerHTML = scene.emoji + " " + scene.id.charAt(0).toUpperCase() + scene.id.slice(1) + " Scene";
+      sceneTextEl.textContent = scene.text;
+      feedbackEl.innerHTML = "";
+      resultEl.textContent = "";
+      progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
 
-      setTimeout(()=>{
-        const scene = scenes[currentScene];
-        sceneEl.style.backgroundColor = scene.bgColor;
-        sceneEl.dataset.icon = scene.emoji;
-
-        sceneHeaderEl.innerHTML = scene.emoji + " " + scene.id.charAt(0).toUpperCase() + scene.id.slice(1) + " Scene";
-        sceneTextEl.textContent = scene.text;
-        feedbackEl.innerHTML = "";
-        resultEl.textContent = "";
-
-        progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
-
-        if(scene.id === "professor"){
-          inputContainer.innerHTML = `<textarea id="student-input" class="professor-input" rows="6" placeholder="Write your email here..."></textarea>`;
-        } else {
-          inputContainer.innerHTML = `<input type="text" id="student-input" placeholder="Type what you would say here...">`;
-        }
-
-        sceneTextEl.style.opacity = 1;
-      }, 200);
+      if(scene.id==="professor"){
+        inputContainer.innerHTML = `<textarea id="student-input" class="professor-input" rows="6" placeholder="Write your email here..."></textarea>`;
+      } else {
+        inputContainer.innerHTML = `<input type="text" id="student-input" placeholder="Type what you would say here...">`;
+      }
     }
 
     submitBtn.addEventListener("click", ()=>{
       const inputEl = document.getElementById("student-input");
       const input = inputEl.value.trim();
       if(!input) return;
-
       const scene = scenes[currentScene];
       const check = checkPass(scene,input);
 
@@ -271,7 +194,6 @@
       resultEl.style.color = "#047857";
       resultEl.style.fontWeight = "bold";
       resultEl.style.fontSize = "16px";
-
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
