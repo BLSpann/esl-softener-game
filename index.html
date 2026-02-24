@@ -39,17 +39,18 @@
 
     #feedback {
       margin-top: 12px;
-      color: #b45309; /* amber for minor feedback */
+      color: #b45309;
     }
 
     #result {
       margin-top: 12px;
       font-weight: bold;
       color: #047857; /* green for success */
+      font-size: 16px;
     }
 
     #result.chaos {
-      font-size: 48px;  /* larger chaos emoji */
+      font-size: 48px;
       color: #b91c1c;
       display: block;
       animation: shake 0.5s ease-in-out 0s 2;
@@ -74,8 +75,7 @@
     }
 
     textarea { resize: vertical; }
-
-    .professor-input { border-color: #10b981; } /* teal for professor */
+    .professor-input { border-color: #10b981; }
 
     button {
       padding: 8px 16px;
@@ -193,7 +193,6 @@
         if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
       }
 
-      // Smarter multi-error response
       let finalFeedback = "";
       if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
@@ -216,6 +215,8 @@
         sceneTextEl.textContent = scene.text;
         feedbackEl.innerHTML = "";
         resultEl.textContent = "";
+        resultEl.style.color = "#047857"; // reset green
+        resultEl.style.fontSize = "16px"; // reset size
 
         progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
 
@@ -246,10 +247,15 @@
       feedbackEl.innerHTML = check.feedback;
 
       if(check.pass){
-        resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
+        // ensure success text formatting
+        resultEl.classList.remove("chaos");
+        resultEl.style.color = "#047857"; 
+        resultEl.style.fontSize = "16px";
+        resultEl.textContent = "✅ Success! You showed the perfect amount of politeness and passed this scene.";
+
         currentScene++;
         if(currentScene < scenes.length){ setTimeout(updateScene,1500); }
-        else{ resultEl.textContent+=" All scenes complete!"; }
+        else{ resultEl.textContent += " All scenes complete!"; }
       }
     });
 
