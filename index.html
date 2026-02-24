@@ -171,20 +171,34 @@
   }
 }
 
-    document.getElementById("submit-btn").addEventListener("click", () => {
-      const input = document.getElementById("student-input").value.trim();
-      if(!input) return;
+   document.getElementById("submit-btn").addEventListener("click", () => {
+  const input = document.getElementById("student-input").value.trim();
+  if (!input) return;
 
-      resultEl.classList.remove("chaos");
+  const scene = scenes[currentScene];
+  const lower = input.toLowerCase();
 
-      resultEl.textContent = "✅ Success! You showed the perfect amount of politeness.";
-      triggerSparkle();
+  resultEl.classList.remove("chaos");
 
-      currentScene++;
-      if(currentScene < scenes.length){
-        setTimeout(updateScene,1500);
-      }
-    });
+  // Check for required softener
+  const hasSoftener = scene.softeners.some(s =>
+    lower.includes(s)
+  );
+
+  if (!hasSoftener) {
+    resultEl.classList.add("chaos");
+    resultEl.innerHTML = "👹<br>Chaos gremlin! Try adding a softener.";
+    return;
+  }
+
+  resultEl.textContent = "✅ Success! You showed the perfect amount of politeness.";
+  triggerSparkle();
+
+  currentScene++;
+  if (currentScene < scenes.length) {
+    setTimeout(updateScene, 1500);
+  }
+});
 
     updateScene();
   </script>
