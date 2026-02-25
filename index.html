@@ -251,6 +251,21 @@
       }, 200);
     }
 
+  function triggerSparkle() {
+  const sparkleEl = document.getElementById("sparkle");
+
+  // Make visible
+  sparkleEl.style.display = "block";
+
+  // Reset animation so it can run again
+  sparkleEl.style.animation = "none";
+  void sparkleEl.offsetWidth; // forces reflow
+  sparkleEl.style.animation = "sparkleFade 1s ease-out forwards";
+
+  // Hide again after animation
+  setTimeout(() => sparkleEl.style.display = "none", 1000);
+}
+
     submitBtn.addEventListener("click", ()=>{
       const inputEl = document.getElementById("student-input");
       const input = inputEl.value.trim();
