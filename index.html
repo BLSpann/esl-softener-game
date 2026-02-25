@@ -42,33 +42,22 @@
       color: #b45309; /* amber for minor feedback */
     }
 
-    /* Container for result + sparkles */
     #result-container {
-      position: relative;
+      position: relative; /* wrapper for result + sparkles */
+      margin-top: 12px;
     }
 
-    /* Success text */
     #result {
-      margin-top: 12px;
       font-weight: bold;
       color: #047857; /* green for success */
       font-size: 16px;
-    }
-
-    /* Chaos text */
-    #result.chaos {
-      font-size: 64px;  /* large chaos emoji */
-      color: #b91c1c;
       text-align: center;
-      display: block;
-      animation: shake 0.5s ease-in-out 0s 2;
     }
 
-    /* Sparkles */
     #sparkle {
       position: absolute;
-      top: -40px;    /* slightly above the success text */
-      left: 50%;     /* horizontally centered */
+      top: -30px;     /* above success text */
+      left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
       display: none;
@@ -78,9 +67,17 @@
     }
 
     @keyframes sparkleFade {
-      0%   { opacity: 0; transform: scale(0.8); }
-      30%  { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 0; transform: scale(1.1); }
+      0%   { opacity: 0; transform: translateX(-50%) scale(0.8); }
+      30%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
+      100% { opacity: 0; transform: translateX(-50%) scale(1.1); }
+    }
+
+    #result.chaos {
+      font-size: 48px;  /* larger chaos emoji */
+      color: #b91c1c;
+      display: block;
+      animation: shake 0.5s ease-in-out 0s 2;
+      text-align: center;
     }
 
     @keyframes shake {
@@ -101,6 +98,7 @@
     }
 
     textarea { resize: vertical; }
+
     .professor-input { border-color: #10b981; } /* teal for professor */
 
     button {
@@ -134,16 +132,11 @@
     <div id="input-container"></div>
     <button id="submit-btn">Submit</button>
     <div id="feedback"></div>
-    
-    <!-- Result + sparkles container -->
     <div id="result-container">
-      <div id="sparkle">✨ ✨ ✨</div>
       <div id="result"></div>
+      <div id="sparkle">✨ ✨ ✨</div>
     </div>
-
-    <div id="footer-credit">
-      Game logic developed with assistance from ChatGPT (OpenAI).
-    </div>
+    <div id="footer-credit">Game logic developed with assistance from ChatGPT (OpenAI).</div>
   </div>
 
   <script>
@@ -176,11 +169,11 @@
     const sceneTextEl = document.getElementById("scene-text");
     const feedbackEl = document.getElementById("feedback");
     const resultEl = document.getElementById("result");
+    const sparkleEl = document.getElementById("sparkle");
     const submitBtn = document.getElementById("submit-btn");
     const inputContainer = document.getElementById("input-container");
     const progressEl = document.getElementById("progress");
     const sceneEl = document.getElementById("scene");
-    const sparkleEl = document.getElementById("sparkle");
 
     const chaosKeywords = [
       "NOW","STOP","SHUT UP","LEAVE","DO IT","OR ELSE","I WILL","I'M GOING TO",
@@ -228,6 +221,7 @@
         if(!hasClosing || !hasName){ feedbacks.push("Include a closing (like 'Thank you') and your name at the end."); pass=false; }
       }
 
+      // Multi-error response
       let finalFeedback = "";
       if(feedbacks.length === 1){ finalFeedback = feedbacks[0]; }
       else if(feedbacks.length > 1){
@@ -238,25 +232,27 @@
       return {pass, feedback:finalFeedback, chaos:false};
     }
 
-    function triggerSparkle() {
+    function triggerSparkle(){
       sparkleEl.style.display = "block";
       sparkleEl.style.animation = "none";
-      void sparkleEl.offsetWidth; // restart animation
+      void sparkleEl.offsetWidth; 
       sparkleEl.style.animation = "sparkleFade 1s ease-out forwards";
-      setTimeout(() => sparkleEl.style.display = "none", 1000);
+      setTimeout(()=> sparkleEl.style.display="none",1000);
     }
 
     function updateScene(){
       resultEl.classList.remove("chaos");
       sceneTextEl.style.opacity = 0;
 
-      setTimeout(()=> {
+      setTimeout(()=>{
         const scene = scenes[currentScene];
         sceneEl.style.backgroundColor = scene.bgColor;
+
         sceneHeaderEl.innerHTML = scene.emoji + " " + scene.id.charAt(0).toUpperCase() + scene.id.slice(1) + " Scene";
         sceneTextEl.textContent = scene.text;
         feedbackEl.innerHTML = "";
         resultEl.textContent = "";
+
         progressEl.textContent = `Scene ${currentScene + 1} of ${scenes.length}`;
 
         if(scene.id === "professor"){
@@ -269,7 +265,7 @@
       }, 200);
     }
 
-    submitBtn.addEventListener("click", ()=> {
+    submitBtn.addEventListener("click", ()=>{
       const inputEl = document.getElementById("student-input");
       const input = inputEl.value.trim();
       if(!input) return;
