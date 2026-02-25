@@ -62,6 +62,20 @@
       margin-top: 12px;
       font-weight: bold;
       color: #047857; /* green for success */
+       position: relative; /* new: sparkles will be positioned relative to this */
+}
+
+#sparkle {
+  position: absolute;
+  top: -20px;     /* slightly above the success text */
+  left: 50%;      /* center horizontally */
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: none;
+  font-size: 28px;
+  text-align: center;
+  animation: sparkleFade 1s ease-out forwards;
+}
     }
 
     #chaos-container {
@@ -120,7 +134,6 @@
 </head>
 <body>
   <div id="scene">
-   <div id="sparkle">✨ ✨ ✨</div>
     <p id="progress"></p>
     <h2 id="scene-header"></h2>
     <p id="scene-text"></p>
@@ -128,6 +141,7 @@
     <button id="submit-btn">Submit</button>
     <div id="feedback"></div>
     <div id="result"></div>
+    <div id="sparkle">✨ ✨ ✨</div>
     <div id="chaos-container"></div>
     <div id="footer-credit">Game logic developed with assistance from ChatGPT (OpenAI).</div>
   </div>
