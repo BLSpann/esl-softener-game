@@ -3,128 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <title>Polite Requests Game</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f9ff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
+ <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f9ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
 
-    #scene {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      width: 600px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      transition: opacity 0.3s ease, background-color 0.3s ease;
-    }
+  #scene {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 600px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+  }
 
-    #scene-header {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+  #scene-header {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    #progress {
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #2563eb;
-    }
+  #progress {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #2563eb;
+  }
 
-    #feedback {
-      margin-top: 12px;
-      color: #b45309; /* amber for minor feedback */
-    }
+  #feedback {
+    margin-top: 12px;
+    color: #b45309;
+  }
 
-    /* Success text container */
-    #result-container {
-      position: relative;
-      text-align: center;
-      margin-top: 12px;
-    }
+  /* Success container */
+  #result-container {
+    position: relative;
+    text-align: center;
+    margin-top: 12px;
+  }
 
-    #result {
-      font-weight: bold;
-      color: #047857; /* green for success */
-      font-size: 16px;
-    }
+  #result {
+    font-weight: bold;
+    color: #047857;
+    font-size: 16px;
+  }
 
-    #sparkle {
-      position: absolute;
-      top: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      pointer-events: none;
-      display: none;
-      font-size: 28px;
-      text-align: center;
-      animation: sparkleFade 1s ease-out forwards;
-    }
+  #sparkle {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    pointer-events: none;
+    display: none;
+    font-size: 28px;
+    white-space: nowrap;
+    animation: sparkleFade 1s ease-out forwards;
+  }
 
-    @keyframes sparkleFade {
-      0%   { opacity: 0; transform: scale(0.8); }
-      30%  { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 0; transform: scale(1.1); }
-    }
+  /* FIXED: preserve centering inside animation */
+  @keyframes sparkleFade {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.8); }
+    30%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    100% { opacity: 0; transform: translateX(-50%) scale(1.1); }
+  }
 
-    #chaos-container {
-      font-size: 48px;
-      font-weight: bold;
-      color: #b91c1c;
-      text-align: center;
-      margin-top: 12px;
-      animation: shake 0.5s ease-in-out 0s 2;
-    }
+  #chaos-container {
+    font-size: 48px;
+    font-weight: bold;
+    color: #b91c1c;
+    text-align: center;
+    margin-top: 12px;
+    animation: shake 0.5s ease-in-out 0s 2;
+  }
 
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
 
-    input, textarea {
-      width: 80%;
-      padding: 8px;
-      font-family: Arial, sans-serif;
-      margin-top: 8px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-    }
+  input, textarea {
+    width: 80%;
+    padding: 8px;
+    font-family: Arial, sans-serif;
+    margin-top: 8px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+  }
 
-    textarea { resize: vertical; }
+  textarea { resize: vertical; }
 
-    .professor-input { border-color: #10b981; }
+  .professor-input { border-color: #10b981; }
 
-    button {
-      padding: 8px 16px;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s ease, transform 0.1s ease;
-      margin-top: 10px;
-    }
+  button {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 10px;
+  }
 
-    button:hover { background-color: #2563eb; }
-    button:active { transform: scale(0.98); }
+  button:hover { background-color: #2563eb; }
+  button:active { transform: scale(0.98); }
 
-    #footer-credit {
-      margin-top: 15px;
-      font-size: 0.8em;
-      color: #555;
-      text-align: center;
-    }
-  </style>
+  #footer-credit {
+    margin-top: 15px;
+    font-size: 0.8em;
+    color: #555;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
   <div id="scene">
