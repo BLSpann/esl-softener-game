@@ -286,6 +286,7 @@
 
       if(check.pass){
         resultEl.textContent="✅ Success! You showed the perfect amount of politeness and passed this scene.";
+        triggerSparkle();
         currentScene++;
         if(currentScene < scenes.length){ setTimeout(updateScene,1500); }
         else{ resultEl.textContent+=" All scenes complete!"; }
