@@ -23,6 +23,22 @@
       transition: opacity 0.3s ease, background-color 0.3s ease;
     }
 
+    #sparkle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  font-size: 28px;
+  text-align: center;
+  animation: sparkleFade 1s ease-out forwards;
+}
+
+@keyframes sparkleFade {
+  0%   { opacity: 0; transform: scale(0.8); }
+  30%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+    
     #scene-header {
       font-size: 1.5em;
       margin-bottom: 10px;
